@@ -2,41 +2,41 @@ import { parseAbiItem } from "abitype";
 import { createConfig, factory } from "ponder";
 
 import { http } from "viem";
+import { arbitrum } from "viem/chains";
+import { ScholarStreamAbi } from "./abis/ScholarStreamAbi";
+import { ScholarStreamFactoryAbi } from "./abis/ScholarStreamFactoryAbi";
 
-import { LlamaCoreAbi } from "./abis/LlamaCoreAbi";
-import { LlamaPolicyAbi } from "./abis/LlamaPolicyAbi";
-
-const llamaFactoryEvent = parseAbiItem(
-  "event LlamaInstanceCreated(address indexed deployer, string indexed name, address llamaCore, address llamaExecutor, address llamaPolicy, uint256 chainId)",
+const scholarStreamFactoryEvent = parseAbiItem(
+  "event ScholarStreamCreated(address token, address scholarStream)"
 );
+
+const ADDRESS_BOOK = {
+  ScholarStreamFactory: "0xE023c88784F331620e1A1c1eCca7002a84348469",
+} as const;
 
 export default createConfig({
   networks: {
-    sepolia: {
-      chainId: 11155111,
-      transport: http(process.env.PONDER_RPC_URL_11155111),
+    arbitrum: {
+      chainId: arbitrum.id,
+      transport: http(process.env.PONDER_RPC_URL_42161),
     },
   },
   contracts: {
-    LlamaCore: {
-      network: "sepolia",
-      abi: LlamaCoreAbi,
-      address: factory({
-        address: "0xFf5d4E226D9A3496EECE31083a8F493edd79AbEB",
-        event: llamaFactoryEvent,
-        parameter: "llamaCore",
-      }),
-      startBlock: 4121269,
+    ScholarStreamFactory: {
+      network: "arbitrum",
+      address: ADDRESS_BOOK.ScholarStreamFactory,
+      abi: ScholarStreamFactoryAbi,
+      startBlock: 311854233,
     },
-    LlamaPolicy: {
-      network: "sepolia",
-      abi: LlamaPolicyAbi,
+    ScholarStream: {
+      network: "arbitrum",
+      abi: ScholarStreamAbi,
+      startBlock: 311854233,
       address: factory({
-        address: "0xFf5d4E226D9A3496EECE31083a8F493edd79AbEB",
-        event: llamaFactoryEvent,
-        parameter: "llamaPolicy",
+        address: ADDRESS_BOOK.ScholarStreamFactory,
+        event: scholarStreamFactoryEvent,
+        parameter: "scholarStream",
       }),
-      startBlock: 4121269,
     },
   },
 });
