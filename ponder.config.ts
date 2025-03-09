@@ -26,12 +26,12 @@ export default createConfig({
       network: "arbitrum",
       address: ADDRESS_BOOK.ScholarStreamFactory,
       abi: ScholarStreamFactoryAbi,
-      startBlock: 311854233,
+      startBlock: 313753576,
     },
     ScholarStream: {
       network: "arbitrum",
       abi: ScholarStreamAbi,
-      startBlock: 311854233,
+      startBlock: 313753576,
       address: factory({
         address: ADDRESS_BOOK.ScholarStreamFactory,
         event: scholarStreamFactoryEvent,
