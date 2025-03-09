@@ -1,6 +1,11 @@
 import { ponder } from "ponder:registry";
-import { PayContract, Token } from "ponder:schema";
-import { erc20Abi } from "viem";
+import {
+  PayContract,
+  Token,
+  Transaction,
+  TransactionType,
+} from "ponder:schema";
+import { erc20Abi, zeroAddress } from "viem";
 
 ponder.on(
   "ScholarStreamFactory:ScholarStreamCreated",
@@ -42,7 +47,17 @@ ponder.on(
     // Create the PayContract with reference to the token
     await context.db.insert(PayContract).values({
       id: event.args.scholarStream,
-      tokenId: event.args.token,
+      token: event.args.token,
+    });
+
+    await context.db.insert(Transaction).values({
+      id: event.log.id,
+      hash: event.transaction.hash,
+      from: event.transaction.from,
+      to: event.transaction.to ?? zeroAddress,
+      type: TransactionType.PAY_CONTRACT_CREATED,
+      amount: 0n,
+      payContract: event.args.scholarStream,
     });
   }
 );

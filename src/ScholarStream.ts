@@ -1,5 +1,11 @@
 import { ponder } from "ponder:registry";
-import { Stream, StreamStatus } from "ponder:schema";
+import {
+  Stream,
+  StreamStatus,
+  Transaction,
+  TransactionType,
+} from "ponder:schema";
+import { zeroAddress } from "viem";
 
 ponder.on("ScholarStream:StreamCreated", async ({ event, context }) => {
   await context.db.insert(Stream).values({
@@ -11,6 +17,17 @@ ponder.on("ScholarStream:StreamCreated", async ({ event, context }) => {
     status: StreamStatus.ACTIVE,
     streamId: event.args.streamId,
   });
+
+  await context.db.insert(Transaction).values({
+    id: event.log.id,
+    hash: event.transaction.hash,
+    from: event.transaction.from,
+    to: event.transaction.to ?? zeroAddress,
+    type: TransactionType.STREAM_CREATED,
+    amount: 0n,
+    stream: event.args.streamId,
+    payContract: event.log.address,
+  });
 });
 
 ponder.on("ScholarStream:StreamCancelled", async ({ event, context }) => {
@@ -21,6 +38,17 @@ ponder.on("ScholarStream:StreamCancelled", async ({ event, context }) => {
     .set({
       status: StreamStatus.CANCELLED,
     });
+
+  await context.db.insert(Transaction).values({
+    id: event.log.id,
+    hash: event.transaction.hash,
+    from: event.transaction.from,
+    to: event.transaction.to ?? zeroAddress,
+    type: TransactionType.STREAM_CANCELLED,
+    amount: 0n,
+    stream: event.args.streamId,
+    payContract: event.log.address,
+  });
 });
 
 ponder.on("ScholarStream:Withdraw", async ({ event, context }) => {
@@ -31,8 +59,40 @@ ponder.on("ScholarStream:Withdraw", async ({ event, context }) => {
     .set((stream) => ({
       amountReceived: stream.amountReceived + event.args.amount,
     }));
+
+  await context.db.insert(Transaction).values({
+    id: event.log.id,
+    hash: event.transaction.hash,
+    from: event.transaction.from,
+    to: event.transaction.to ?? zeroAddress,
+    type: TransactionType.WITHDRAW,
+    amount: event.args.amount,
+    payContract: event.log.address,
+    stream: event.args.streamId,
+  });
 });
 
 // Payer related events
-ponder.on("ScholarStream:Deposit", async ({ event, context }) => {});
-ponder.on("ScholarStream:WithdrawPayer", async ({ event, context }) => {});
+ponder.on("ScholarStream:Deposit", async ({ event, context }) => {
+  await context.db.insert(Transaction).values({
+    id: event.log.id,
+    hash: event.transaction.hash,
+    from: event.transaction.from,
+    to: event.transaction.to ?? zeroAddress,
+    type: TransactionType.DEPOSIT,
+    amount: event.args.amount,
+    payContract: event.log.address,
+  });
+});
+
+ponder.on("ScholarStream:WithdrawPayer", async ({ event, context }) => {
+  await context.db.insert(Transaction).values({
+    id: event.log.id,
+    hash: event.transaction.hash,
+    from: event.args.payer,
+    to: event.args.payer,
+    type: TransactionType.WITHDRAW_PAYER,
+    amount: event.args.amount,
+    payContract: event.log.address,
+  });
+});

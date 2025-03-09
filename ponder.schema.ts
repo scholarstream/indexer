@@ -2,15 +2,16 @@ import { onchainTable, relations } from "ponder";
 
 export const PayContract = onchainTable("payContract", (t) => ({
   id: t.text().primaryKey(),
-  tokenId: t.text().notNull(),
+  token: t.text().notNull(),
 }));
 
 export const PayContractRelations = relations(PayContract, ({ many, one }) => ({
   streams: many(Stream),
   token: one(Token, {
-    fields: [PayContract.tokenId],
+    fields: [PayContract.token],
     references: [Token.id],
   }),
+  transactions: many(Transaction),
 }));
 
 export const Token = onchainTable("token", (t) => ({
@@ -36,23 +37,41 @@ export const Stream = onchainTable("stream", (t) => ({
   amountReceived: t.bigint().notNull().default(0n),
 }));
 
-export const StreamRelations = relations(Stream, ({ one }) => ({
+export const StreamRelations = relations(Stream, ({ one, many }) => ({
   payContract: one(PayContract, {
     fields: [Stream.payContract],
     references: [PayContract.id],
   }),
+  transactions: many(Transaction),
 }));
 
-// event Deposit(address indexed payer, uint256 amount);
-// event StreamCreated(address indexed from, address indexed to, uint256 amountPerSec, bytes32 streamId);
-// event StreamCancelled(address indexed from, address indexed to, uint256 amountPerSec, bytes32 streamId);
-// event Withdraw(address indexed from, address indexed to, uint256 amount, bytes32 streamId);
-// event WithdrawPayer(address indexed payer, uint256 amount);
+export const TransactionType = {
+  DEPOSIT: "Deposit",
+  STREAM_CREATED: "StreamCreated",
+  STREAM_CANCELLED: "StreamCancelled",
+  WITHDRAW: "Withdraw",
+  WITHDRAW_PAYER: "WithdrawPayer",
+  PAY_CONTRACT_CREATED: "PayContractCreated",
+} as const;
 
 export const Transaction = onchainTable("transaction", (t) => ({
   id: t.text().primaryKey(),
-  stream: t.text(),
-  payer: t.text(),
-  awardee: t.text(),
+  hash: t.text().notNull(),
+  from: t.text().notNull(),
+  to: t.text().notNull(),
+  type: t.text().notNull(),
   amount: t.bigint(),
+  stream: t.text(),
+  payContract: t.text(),
+}));
+
+export const TransactionRelations = relations(Transaction, ({ one }) => ({
+  stream: one(Stream, {
+    fields: [Transaction.stream],
+    references: [Stream.id],
+  }),
+  payContract: one(PayContract, {
+    fields: [Transaction.payContract],
+    references: [PayContract.id],
+  }),
 }));
