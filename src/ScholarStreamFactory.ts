@@ -37,12 +37,15 @@ ponder.on(
     });
 
     // Create the Token
-    await context.db.insert(Token).values({
-      id: event.args.token,
-      name,
-      symbol,
-      decimals,
-    });
+    await context.db
+      .insert(Token)
+      .values({
+        id: event.args.token,
+        name,
+        symbol,
+        decimals,
+      })
+      .onConflictDoNothing();
 
     // Create the PayContract with reference to the token
     await context.db.insert(PayContract).values({
