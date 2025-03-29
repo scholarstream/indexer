@@ -16,10 +16,14 @@ ponder.on("ScholarStream:StreamCreated", async ({ event, context }) => {
     amountPerSec: event.args.amountPerSec,
     status: StreamStatus.ACTIVE,
     streamId: event.args.streamId,
+    startTimestamp: event.block.timestamp,
+    lastWithdrawTimestamp: event.block.timestamp,
   });
 
   await context.db.insert(Transaction).values({
     id: event.log.id,
+    blockNumber: event.block.number,
+    timestamp: event.block.timestamp,
     hash: event.transaction.hash,
     from: event.transaction.from,
     to: event.transaction.to ?? zeroAddress,
@@ -41,6 +45,8 @@ ponder.on("ScholarStream:StreamCancelled", async ({ event, context }) => {
 
   await context.db.insert(Transaction).values({
     id: event.log.id,
+    blockNumber: event.block.number,
+    timestamp: event.block.timestamp,
     hash: event.transaction.hash,
     from: event.transaction.from,
     to: event.transaction.to ?? zeroAddress,
@@ -58,10 +64,13 @@ ponder.on("ScholarStream:Withdraw", async ({ event, context }) => {
     })
     .set((stream) => ({
       amountReceived: stream.amountReceived + event.args.amount,
+      lastWithdrawTimestamp: event.block.timestamp,
     }));
 
   await context.db.insert(Transaction).values({
     id: event.log.id,
+    blockNumber: event.block.number,
+    timestamp: event.block.timestamp,
     hash: event.transaction.hash,
     from: event.transaction.from,
     to: event.transaction.to ?? zeroAddress,
@@ -80,6 +89,8 @@ ponder.on("ScholarStream:Deposit", async ({ event, context }) => {
     from: event.transaction.from,
     to: event.transaction.to ?? zeroAddress,
     type: TransactionType.DEPOSIT,
+    blockNumber: event.block.number,
+    timestamp: event.block.timestamp,
     amount: event.args.amount,
     payContract: event.log.address,
   });
@@ -88,6 +99,8 @@ ponder.on("ScholarStream:Deposit", async ({ event, context }) => {
 ponder.on("ScholarStream:WithdrawPayer", async ({ event, context }) => {
   await context.db.insert(Transaction).values({
     id: event.log.id,
+    blockNumber: event.block.number,
+    timestamp: event.block.timestamp,
     hash: event.transaction.hash,
     from: event.args.payer,
     to: event.args.payer,

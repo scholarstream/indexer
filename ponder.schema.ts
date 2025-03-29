@@ -34,6 +34,8 @@ export const Stream = onchainTable("stream", (t) => ({
   status: t.text().notNull(),
   amountPerSec: t.bigint().notNull(),
   streamId: t.text().notNull(),
+  startTimestamp: t.bigint().notNull(),
+  lastWithdrawTimestamp: t.bigint().notNull().default(0n),
   amountReceived: t.bigint().notNull().default(0n),
 }));
 
@@ -58,6 +60,8 @@ export const Transaction = onchainTable("transaction", (t) => ({
   id: t.text().primaryKey(),
   hash: t.text().notNull(),
   from: t.text().notNull(),
+  timestamp: t.bigint().notNull(),
+  blockNumber: t.bigint().notNull(),
   to: t.text().notNull(),
   type: t.text().notNull(),
   amount: t.bigint(),
