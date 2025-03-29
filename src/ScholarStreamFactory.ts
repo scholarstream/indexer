@@ -55,6 +55,8 @@ ponder.on(
 
     await context.db.insert(Transaction).values({
       id: event.log.id,
+      blockNumber: event.block.number,
+      timestamp: event.block.timestamp,
       hash: event.transaction.hash,
       from: event.transaction.from,
       to: event.transaction.to ?? zeroAddress,
