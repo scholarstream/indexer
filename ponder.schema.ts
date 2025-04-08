@@ -3,12 +3,17 @@ import { onchainTable, relations } from "ponder";
 export const PayContract = onchainTable("payContract", (t) => ({
   id: t.text().primaryKey(),
   token: t.text().notNull(),
+  vault: t.text().notNull(),
 }));
 
 export const PayContractRelations = relations(PayContract, ({ many, one }) => ({
   streams: many(Stream),
   token: one(Token, {
     fields: [PayContract.token],
+    references: [Token.id],
+  }),
+  vault: one(Token, {
+    fields: [PayContract.vault],
     references: [Token.id],
   }),
   transactions: many(Transaction),

@@ -7,7 +7,7 @@ import {
 } from "ponder:schema";
 import { zeroAddress } from "viem";
 
-ponder.on("ScholarStream:StreamCreated", async ({ event, context }) => {
+ponder.on("ScholarStreamYield:StreamCreated", async ({ event, context }) => {
   await context.db.insert(Stream).values({
     id: event.args.streamId,
     payContract: event.log.address,
@@ -34,7 +34,7 @@ ponder.on("ScholarStream:StreamCreated", async ({ event, context }) => {
   });
 });
 
-ponder.on("ScholarStream:StreamCancelled", async ({ event, context }) => {
+ponder.on("ScholarStreamYield:StreamCancelled", async ({ event, context }) => {
   await context.db
     .update(Stream, {
       id: event.args.streamId,
@@ -57,7 +57,7 @@ ponder.on("ScholarStream:StreamCancelled", async ({ event, context }) => {
   });
 });
 
-ponder.on("ScholarStream:Withdraw", async ({ event, context }) => {
+ponder.on("ScholarStreamYield:Withdraw", async ({ event, context }) => {
   await context.db
     .update(Stream, {
       id: event.args.streamId,
@@ -82,7 +82,7 @@ ponder.on("ScholarStream:Withdraw", async ({ event, context }) => {
 });
 
 // Payer related events
-ponder.on("ScholarStream:Deposit", async ({ event, context }) => {
+ponder.on("ScholarStreamYield:Deposit", async ({ event, context }) => {
   await context.db.insert(Transaction).values({
     id: event.log.id,
     hash: event.transaction.hash,
@@ -96,7 +96,7 @@ ponder.on("ScholarStream:Deposit", async ({ event, context }) => {
   });
 });
 
-ponder.on("ScholarStream:WithdrawPayer", async ({ event, context }) => {
+ponder.on("ScholarStreamYield:WithdrawPayer", async ({ event, context }) => {
   await context.db.insert(Transaction).values({
     id: event.log.id,
     blockNumber: event.block.number,

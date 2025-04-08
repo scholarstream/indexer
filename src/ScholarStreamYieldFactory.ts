@@ -8,10 +8,10 @@ import {
 import { erc20Abi, zeroAddress } from "viem";
 
 ponder.on(
-  "ScholarStreamFactory:ScholarStreamCreated",
+  "ScholarStreamYieldFactory:ScholarStreamCreated",
   async ({ event, context }) => {
     console.log(
-      `Handling ScholarStreamCreated event from ScholarStreamFactory @ ${event.log.address}`
+      `Handling ScholarStreamCreated event from ScholarStreamYieldFactory @ ${event.log.address}`
     );
 
     // Fetch token data from the blockchain
@@ -36,6 +36,29 @@ ponder.on(
       ],
     });
 
+    // Fetch token data from the blockchain
+    const [vaultName, vaultSymbol, vaultDecimals] =
+      await context.client.multicall({
+        allowFailure: false,
+        contracts: [
+          {
+            abi: erc20Abi,
+            address: event.args.vault,
+            functionName: "name",
+          },
+          {
+            abi: erc20Abi,
+            address: event.args.vault,
+            functionName: "symbol",
+          },
+          {
+            abi: erc20Abi,
+            address: event.args.vault,
+            functionName: "decimals",
+          },
+        ],
+      });
+
     // Create the Token
     await context.db
       .insert(Token)
@@ -47,10 +70,22 @@ ponder.on(
       })
       .onConflictDoNothing();
 
+    // Create the Vault Token
+    await context.db
+      .insert(Token)
+      .values({
+        id: event.args.vault,
+        name: vaultName,
+        symbol: vaultSymbol,
+        decimals: vaultDecimals,
+      })
+      .onConflictDoNothing();
+
     // Create the PayContract with reference to the token
     await context.db.insert(PayContract).values({
       id: event.args.scholarStream,
       token: event.args.token,
+      vault: event.args.vault,
     });
 
     await context.db.insert(Transaction).values({
