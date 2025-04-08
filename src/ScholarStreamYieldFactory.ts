@@ -37,27 +37,9 @@ ponder.on(
     });
 
     // Fetch token data from the blockchain
-    const [vaultName, vaultSymbol, vaultDecimals] =
-      await context.client.multicall({
-        allowFailure: false,
-        contracts: [
-          {
-            abi: erc20Abi,
-            address: event.args.vault,
-            functionName: "name",
-          },
-          {
-            abi: erc20Abi,
-            address: event.args.vault,
-            functionName: "symbol",
-          },
-          {
-            abi: erc20Abi,
-            address: event.args.vault,
-            functionName: "decimals",
-          },
-        ],
-      });
+    const vaultName = "Staked USDF";
+    const vaultSymbol = "sUSDF";
+    const vaultDecimals = 18;
 
     // Create the Token
     await context.db
