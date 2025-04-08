@@ -37,8 +37,8 @@ ponder.on(
     });
 
     // Fetch token data from the blockchain
-    const vaultName = "Staked USDF";
-    const vaultSymbol = "sUSDF";
+    const vaultName = "Staked Mock USDC";
+    const vaultSymbol = "sUSDC";
     const vaultDecimals = 18;
 
     // Create the Token
