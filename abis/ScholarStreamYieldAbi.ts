@@ -1,4 +1,4 @@
-const ScholarStreamYieldAbi = [
+export const ScholarStreamYieldAbi = [
   {
     type: "constructor",
     inputs: [

@@ -1,8 +1,9 @@
 import { parseAbiItem } from "abitype";
 import { createConfig, factory } from "ponder";
-
 import { http } from "viem";
-import { arbitrum, arbitrumSepolia } from "viem/chains";
+import { arbitrumSepolia } from "viem/chains";
+import { ScholarStreamYieldFactoryAbi } from "./abis/ScholarStreamYieldFactoryAbi";
+import { ScholarStreamYieldAbi } from "./abis/ScholarStreamYieldAbi";
 
 const factoryEvent = parseAbiItem(
   "event ScholarStreamCreated(address token, address vault, address scholarStream)"

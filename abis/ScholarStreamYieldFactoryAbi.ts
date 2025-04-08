@@ -1,4 +1,4 @@
-const ScholarStreamYieldFactoryAbi = [
+export const ScholarStreamYieldFactoryAbi = [
   {
     type: "function",
     name: "createPayContract",
