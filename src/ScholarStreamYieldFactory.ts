@@ -15,25 +15,22 @@ ponder.on(
     );
 
     // Fetch token data from the blockchain
-    const [name, symbol, decimals] = await context.client.multicall({
-      allowFailure: false,
-      contracts: [
-        {
-          abi: erc20Abi,
-          address: event.args.token,
-          functionName: "name",
-        },
-        {
-          abi: erc20Abi,
-          address: event.args.token,
-          functionName: "symbol",
-        },
-        {
-          abi: erc20Abi,
-          address: event.args.token,
-          functionName: "decimals",
-        },
-      ],
+    const name = await context.client.readContract({
+      abi: erc20Abi,
+      address: event.args.token,
+      functionName: "name",
+    });
+
+    const symbol = await context.client.readContract({
+      abi: erc20Abi,
+      address: event.args.token,
+      functionName: "symbol",
+    });
+
+    const decimals = await context.client.readContract({
+      abi: erc20Abi,
+      address: event.args.token,
+      functionName: "decimals",
     });
 
     // Fetch token data from the blockchain
