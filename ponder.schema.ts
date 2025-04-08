@@ -4,6 +4,7 @@ export const PayContract = onchainTable("payContract", (t) => ({
   id: t.text().primaryKey(),
   token: t.text().notNull(),
   vault: t.text().notNull(),
+  createdAtTimestamp: t.bigint().notNull(),
 }));
 
 export const PayContractRelations = relations(PayContract, ({ many, one }) => ({

@@ -65,6 +65,7 @@ ponder.on(
       id: event.args.scholarStream,
       token: event.args.token,
       vault: event.args.vault,
+      createdAtTimestamp: event.block.timestamp,
     });
 
     await context.db.insert(Transaction).values({
